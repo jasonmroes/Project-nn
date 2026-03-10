@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# --- PROJECT METADATA & DEPENDENCIES ---
+[project]
+name = "tcga-classifier"
+version = "0.1.0"
+description = "Multi-modal cancer classification using TITAN embeddings and clinical text"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "Your Team", email = "your.email@student.uva.nl"},
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "torch",
+    "torchvision",
+    "tensorboard",
+    "tqdm",
+    "pyyaml",
+    "python-dotenv",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "umap-learn",
+    "hydra-core",
+    "omegaconf",
+    "wandb",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "pre-commit",
+]
+
+# Tell setuptools where to find packages
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+# Automatically discover all packages in src/
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# --- TOOL CONFIGURATION ---
+
+[tool.ruff]
+exclude = [".git", "__pycache__", "venv", "data"]
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
