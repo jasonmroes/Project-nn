@@ -1,3 +1,4 @@
 venv/
 .venv/
 data/
+placeholder.egg-info/
