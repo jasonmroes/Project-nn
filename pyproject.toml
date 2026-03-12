@@ -24,7 +24,6 @@ dependencies = [
     "python-dotenv",
     "scikit-learn",
     "matplotlib",
-    "numpy",
     "seaborn",
     "umap-learn",
     "hydra-core",

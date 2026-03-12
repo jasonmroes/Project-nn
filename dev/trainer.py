@@ -1,4 +1,4 @@
+from dataloader import DataLoader
 import torch
 import torch.nn as nn
-import torch.DataLoader as DataLoader
 import pyyaml as yaml
