@@ -14,6 +14,7 @@ maybe more yamls for different sub functions, or just use different 'chapters'
 
 3. install pyproject.toml 'pip3 install -e .'
 
+4. If pytest doesn't work, run: "./.venv/bin/python" -m pytest -q
 # Inference
 1. 
 
