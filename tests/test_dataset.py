@@ -16,12 +16,18 @@ def test_retrieve_first_and_last_items():
     image, label = dataset[-1]
     assert isinstance(image, torch.Tensor), "The retrieved image should be a torch tensor"
     assert label == 24, "Last image label in the train_set is 24"
-    assert label == 24, "Last image label in the train_set is 0"
 
+def test_retrieve_first_three_items():
+    """Test whether the dataset __getitem__ method correctly retrieves the first three images and their labels"""
+    dataset = FoodDataset()
+
+    for i in range(3):
+        image, label = dataset[i]
+        assert isinstance(image, torch.Tensor), f"Image at index {i} is not a tensor"
 
 ##### Dataloader tests ######
 
-def test_dataloader_single():
+def test_dataloader():
     """Test whether the dataloader correctly retrieves a batch of images and labels"""
     dataset = FoodDataset()
     dataloader = FoodDataLoader(dataset, batch_size=4, shuffle=False)
