@@ -42,3 +42,11 @@ def test_dataloader():
         assert images.shape[0] == 4, "Batch size should be 4"
         assert labels.shape[0] == 4, "Batch size should be 4"
         break # Only test the first batch
+    
+    # Test the training validation dataloader
+    for images, labels in val_loader:
+        assert isinstance(images, torch.Tensor)
+        assert isinstance(labels, torch.Tensor)
+        assert images.shape[0] == 4, "Batch size should be 4"
+        assert labels.shape[0] == 4, "Batch size should be 4"
+        break # Only test the first batch
