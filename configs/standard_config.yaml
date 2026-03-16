@@ -7,12 +7,16 @@ seed: 42
 data:
   #dataset_type: "tcga"
   data_path: "data/dataset_split"
+  labels_path: "data/train_labels.csv"
+  image_dir: "data/train_set/train_set/train_set/"
+  shuffle: true
   input_shape: [3, 96, 96]
   batch_size: 64
-  #num_workers: 4
-  validation_fraction: 0.2
+  num_workers: 0
+  val_fraction: 0.2
   test_fraction: 0.1
   aggregation_method: "mean"
+  k: 4 # Number of folds for k-fold cross-validation 
 
 model:
   #type: "late_fusion"
