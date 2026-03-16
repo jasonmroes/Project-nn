@@ -33,7 +33,7 @@ def test_dataloader():
     dataloader = FoodDataLoader(dataset, batch_size=4, shuffle=False)
 
     # first 4 images are train set, next 4 the val_set
-    train_loader, val_loader = dataloader.get_train_val_dataloaders(train_indices=[0,1,2,3], val_indices=[4,5,6,7])
+    train_loader, val_loader = dataloader.get_train_val_dataloaders()
 
     # Test the training dataloader
     for images, labels in train_loader:
