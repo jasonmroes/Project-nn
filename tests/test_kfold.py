@@ -1,5 +1,6 @@
 from dev.data.dataset import FoodDataset
 from dev.data.dataloader import FoodDataLoader
+from dev.data.transformations import rotate_translate_flip
 from torch.utils.data import DataLoader
 import torch
 
@@ -127,3 +128,17 @@ def test_kfold_val_sets_union_covers_full_dataset():
         f"Total val indices ({len(all_val_indices)}) != dataset size ({len(dataset)}): "
         "some indices appear in more than one val fold"
     )
+
+def test_kfold_and_augmentation():
+    """Test that k-fold dataloader can be used with augmentation and still returns valid tensors."""
+    augmented_dataset = FoodDataset(config=None, augment_transform=rotate_translate_flip, augment_fraction=1.0) # Apply augmentation to all images for testing
+    augmented_dataloader = FoodDataLoader(augmented_dataset, batch_size=4, shuffle=False, k=K)
+    for fold, train_loader, val_loader in augmented_dataloader.get_k_fold_dataloaders():
+        for images, labels in train_loader:
+            assert isinstance(images, torch.Tensor), f"Fold {fold}: train images are not a Tensor"
+            assert isinstance(labels, torch.Tensor), f"Fold {fold}: train labels are not a Tensor"
+            break
+        for images, labels in val_loader:
+            assert isinstance(images, torch.Tensor), f"Fold {fold}: val images are not a Tensor"
+            assert isinstance(labels, torch.Tensor), f"Fold {fold}: val labels are not a Tensor"
+            break

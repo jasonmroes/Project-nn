@@ -2,3 +2,4 @@ venv/
 .venv/
 data/
 placeholder.egg-info/
+*__pycache__/
