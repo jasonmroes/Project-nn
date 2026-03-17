@@ -10,12 +10,14 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
-  input_shape: [3, 96, 96]
+  input_shape: [3, 96, 96] #TBD
   batch_size: 64
   num_workers: 0
+
   val_fraction: 0.2
   test_fraction: 0.1
-  aggregation_method: "mean"
+  augment_fraction: 0.5 # fraction of images in the training set that should be augmented per epoch
+  augmentation_function: "rotate_translate_flip" # function name to be used as in dev/data/transformations.py
   k: 4 # Number of folds for k-fold cross-validation 
 
 model:
