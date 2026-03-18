@@ -1,6 +1,6 @@
-from dev.data.dataset import FoodDataset
-from dev.data.dataloader import FoodDataLoader
-from dev.data.transformations import rotate_translate_flip
+from data.dataset import FoodDataset
+from data.dataloader import FoodDataLoader
+from data.transformations import rotate_translate_flip
 from torch.utils.data import DataLoader
 import torch
 

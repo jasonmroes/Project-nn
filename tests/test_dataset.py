@@ -1,6 +1,6 @@
-from dev.data.dataset import FoodDataset
-from dev.data.dataloader import FoodDataLoader
-from dev.data.transformations import rotate_translate_flip
+from data.dataset import FoodDataset
+from data.dataloader import FoodDataLoader
+from data.transformations import rotate_translate_flip
 
 import torch
 
@@ -36,7 +36,7 @@ def test_transformation_applied():
         image, _ = dataset[i]
         assert isinstance(image, torch.Tensor), f"Image at index {i} is not a tensor, it is {type(image)}"
         # We can't easily test the specific transformations, but we can check that the image is still a valid tensor after augmentation
-        assert image.shape == (3, 224, 224), f"Image at index {i} has incorrect shape after transformation: {image.shape}"
+        assert image.shape == (3, 128, 128), f"Image at index {i} has incorrect shape after transformation: {image.shape}. Did you forget to update this test after changing the image size in dataset.py, standardise?"
 
 ##### Dataloader tests ######
 
