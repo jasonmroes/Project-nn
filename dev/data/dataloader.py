@@ -125,7 +125,7 @@ class FoodDataLoader:
         """Yield (fold, train_loader, val_loader) for each of the k folds.
  
         Usage:
-            for fold, train_loader, val_loader in food_dataloader.get_kfold_dataloaders():
+            for fold, train_loader, val_loader in food_dataloader.get_k_fold_dataloaders():
                 # train and evaluate for this fold ...
         """
         splits = split_kfold(

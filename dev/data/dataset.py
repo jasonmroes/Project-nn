@@ -66,7 +66,7 @@ class FoodDataset(torch.utils.data.Dataset):
             idx = self.indices[idx] # Map the provided index to the actual index in the labels dataframe
 
         image_name = self.labels_df.iloc[idx, 0] # the first column contains image filenames
-        label = self.labels_df.iloc[idx, 1] # the second column contains labels
+        label = self.labels_df.iloc[idx, 1] - 1 # the second column contains labels, convert 1-indexed to 0-indexed
 
 
         # Data directory + correct folder + specific image
