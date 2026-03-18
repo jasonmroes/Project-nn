@@ -160,10 +160,10 @@ class Trainer:
                 val_accuracy = self.evaluate(val_loader, epoch=epoch, fold=fold)
  
                 # Save a checkpoint if this is the best validation accuracy so far
-                is_best = val_accuracy > self.best_val_accuracy
-                if is_best:
+                
+                if val_accuracy > self.best_val_accuracy:
                     self.best_val_accuracy = val_accuracy
-                self.save_checkpoint(epoch, val_accuracy, is_best=is_best)
+                self.save_checkpoint(epoch, val_accuracy)
 
         self.writer.close()
         print("Congratulations Congratulations Congratulations!")
@@ -173,7 +173,7 @@ class Trainer:
 
 if __name__ == "__main__":
     # Quick sanity check for the Trainer class
-    with open("configs/test_config.yaml", "r") as f:
+    with open("configs/k1_aug0_config.yaml", "r") as f:
         config = yaml.safe_load(f)
     
     config = DictConfig(config) # Convert to DictConfig for consistency
