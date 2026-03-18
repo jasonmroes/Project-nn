@@ -32,6 +32,7 @@ class FoodDataset(torch.utils.data.Dataset):
             data_dir: str = "data/",
             labels_path: str = "data/train_labels.csv",
             image_dir: str = "data/train_set/train_set/train_set/",
+            image_shape: list = [128, 128],
             indices: list =  None, # Optional: load samples indicated by the indices from train/val, as split by split.py
             val_fraction: float = 0.1,
             augment_transform: transforms.Compose = None, # TODO reference yaml
@@ -43,12 +44,14 @@ class FoodDataset(torch.utils.data.Dataset):
             labels_path = config.data.labels_path
             image_dir = config.data.image_dir
             val_fraction = config.data.val_fraction
+            image_shape = config.data.input_shape
             augment_fraction = config.data.augment_fraction
             augment_transform = getattr(data.transformations, config.data.augmentation_function) # Get the augmentation function from the transformations module based on the name in the yaml
 
         self.data_dir = data_dir
         self.labels_path = labels_path
         self.image_dir = image_dir
+        self.image_shape = image_shape
         self.val_fraction = val_fraction
         self.indices = indices
         self.augment_transform = augment_transform
@@ -81,7 +84,7 @@ class FoodDataset(torch.utils.data.Dataset):
         # Transform images to be the same size and normalised
         standardise = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize((128, 128)), # At minimum, resize images to the same size.
+            transforms.Resize((self.image_shape)), # At minimum, resize images to the same size.
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]) # And normalize pixel values to [-1, 1] for better stability.
 
         image = standardise(image)

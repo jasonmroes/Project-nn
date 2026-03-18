@@ -74,7 +74,7 @@ if __name__ == "__main__":
     config = DictConfig(config) # Convert to DictConfig for consistency
     data = FoodDataset(config=config) # Use the config to initialize the dataset
     num_classes = len(data.labels_df['label'].unique()) # Dynamically determine number of classes from the dataset labels
-    model = FoodClassifier(num_classes=num_classes)
+    model = FoodClassifier(num_classes=num_classes, config=config)
     dataloader = FoodDataLoader(data, batch_size=4, shuffle=True)
 
     trainer = Trainer(model=model, dataloader=dataloader, config=config)

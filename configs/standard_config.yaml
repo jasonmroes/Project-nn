@@ -10,6 +10,7 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
+  image_shape: [128, 128]
   input_shape: [3, 96, 96] #TBD
   batch_size: 64
   num_workers: 0
@@ -25,8 +26,7 @@ model:
 
   # Multi-modal dimensions
   #visual_dim: 768   # TITAN embeddings dimension
-  
-  hidden_dims: [1024, 512, 256, 128]
+
   dropout_rate: 0.25
 
   use_batch_norm: true

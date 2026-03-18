@@ -51,8 +51,12 @@ class FoodClassifier(nn.Module):
         dropout: Dropout probability before the final FC layer.
     """
 
-    def __init__(self, num_classes: int, dropout: float = 0.5):
+    def __init__(self, config: DictConfig, num_classes: int, dropout: float = 0.5):
         super().__init__()
+
+        if config:
+            num_classes = config.data.classes
+            dropout = config.model.dropout_rate
 
         self.features = nn.Sequential(
             ConvBlock(3,   32,  pool=True),   # -> (B, 32,  112, 112)
