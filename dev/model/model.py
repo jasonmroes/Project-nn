@@ -1,6 +1,9 @@
+from data.dataset import FoodDataset
+from data.dataloader import FoodDataLoader
 import torch
 import torch.nn as nn
 import yaml
+from omegaconf import DictConfig 
 
 # Model code generated with Claude
 
@@ -81,7 +84,12 @@ class FoodClassifier(nn.Module):
 
 if __name__ == "__main__":
     # Quick sanity check — mirrors your test convention
-    num_classes = data[classes]
+    with open("configs/standard_config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    
+    config = DictConfig(config) # Convert to DictConfig for consistency
+    data = FoodDataset(config=config) # Use the config to initialize the dataset
+    num_classes = len(data.labels_df['label'].unique()) # Dynamically determine number of classes from the dataset labels
     model = FoodClassifier(num_classes=num_classes)
 
     dummy = torch.randn(4, 3, 224, 224)  # batch of 4 images
