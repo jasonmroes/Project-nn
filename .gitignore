@@ -1,6 +1,7 @@
 venv/
 .venv/
-data/
+/data/
+!/dev/data/ # DO NOT ignore the data handling directory
 placeholder.egg-info/
 *__pycache__*
 *.pyc
