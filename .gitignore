@@ -5,3 +5,5 @@ venv/
 placeholder.egg-info/
 *__pycache__*
 *.pyc
+experiments/
+runs/

@@ -45,7 +45,7 @@ model:
 training:
   epochs: 10
   learning_rate: 0.0005
-  save_dir: "./experiments/standard_config"
+  save_dir: "./experiments/standard_config/"
   granularity: 100
   weight_decay: 0.015
 

@@ -30,7 +30,6 @@ class FoodDataLoader:
             k: int = 4
             ):
         if config:
-            indices = config.data.indices
             batch_size = config.data.batch_size
             shuffle = config.data.shuffle
             num_workers = config.data.num_workers

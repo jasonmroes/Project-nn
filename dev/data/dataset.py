@@ -44,7 +44,7 @@ class FoodDataset(torch.utils.data.Dataset):
             labels_path = config.data.labels_path
             image_dir = config.data.image_dir
             val_fraction = config.data.val_fraction
-            image_shape = config.data.input_shape
+            image_shape = config.data.image_shape
             augment_fraction = config.data.augment_fraction
             augment_transform = getattr(data.transformations, config.data.augmentation_function) # Get the augmentation function from the transformations module based on the name in the yaml
 

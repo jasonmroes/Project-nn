@@ -1,4 +1,4 @@
-# Standard Configuration for this model. Based on configuration file used in
+# Test. Uses smaller image size and 1 epoch for code testing purposes only.. Configuration for this model. Based on configuration file used in
 # previous MLOps project. Adjusted for this project.
 
 experiment_name: "tcga_champion"
@@ -10,12 +10,13 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
-  input_shape: [3, 96, 96] #TBD
+  image_shape: [32, 32]
   batch_size: 64
   num_workers: 0
-
+  classes: 80
+    
   val_fraction: 0.2
-  augment_fraction: 0.0 # fraction of images in the training set that should be augmented per epoch
+  augment_fraction: 0.5 # fraction of images in the training set that should be augmented per epoch
   augmentation_function: "rotate_translate_flip" # function name to be used as in dev/data/transformations.py
   k: 1 # Number of folds for k-fold cross-validation 
 
@@ -24,8 +25,7 @@ model:
 
   # Multi-modal dimensions
   #visual_dim: 768   # TITAN embeddings dimension
-  
-  hidden_dims: [1024, 512, 256, 128]
+
   dropout_rate: 0.25
 
   use_batch_norm: true
@@ -42,9 +42,9 @@ model:
   use_class_weights: true
 
 training:
-  epochs: 10
+  epochs: 1
   learning_rate: 0.0005
-  save_dir: "./experiments/k1_augment0/"
+  save_dir: "./experiments/test_config/"
   granularity: 100
   weight_decay: 0.015
 

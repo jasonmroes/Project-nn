@@ -2,45 +2,114 @@ from data.dataloader import FoodDataLoader
 from data.dataset import FoodDataset
 from model.model import FoodClassifier
 
-import torch
+import yaml
+import os
 import torch
 import torch.nn as nn
-import yaml
+from torch.utils.tensorboard import SummaryWriter
 from omegaconf import DictConfig
 
 # Trainer code generated with Claude
 class Trainer:
-    def __init__(self, model: nn.Module, dataloader: FoodDataLoader, config: DictConfig = None):
-        if config:
-            self.model = model
-            self.dataloader = dataloader
-            self.criterion = nn.CrossEntropyLoss() # simple choice for multi-class classification
-            self.optimizer = torch.optim.Adam(model.parameters(), lr=config.training.learning_rate)
-            self.num_epochs = config.training.epochs
-        else:
-            raise ValueError("Config must be provided for Trainer initialization.")
+    def __init__(self, config: DictConfig, model: nn.Module, dataloader: FoodDataLoader):
+        """Trainer class to handle the training loop, evaluation, checkpointing, and logging.
+        Args:
+            model: The neural network model to be trained.
+            dataloader: The DataLoader providing training and validation data.
+            config: Configuration object containing hyperparameters and settings.
+        """
 
-    def train_single_epoch(self):
-        """Train the model for one epoch on the training data."""
+        self.model = model
+        self.config = config
+        self.dataloader = dataloader
+        self.criterion = nn.CrossEntropyLoss() # simple choice for multi-class classification
+        self.optimizer = torch.optim.Adam(model.parameters(), lr=config.training.learning_rate)
+        self.num_epochs = config.training.epochs
+        
+        # Checkpointing — save to experiments/checkpoints/ by default
+        self.checkpoint_dir = config.training.get("save_dir", "experiments/checkpoints/")
+        os.makedirs(self.checkpoint_dir, exist_ok=True)
+        self.best_val_accuracy = 0.0
+ 
+        # TensorBoard writer — logs written to runs/ by default
+        log_dir = config.training.get("log_dir", "runs/")
+        self.writer = SummaryWriter(log_dir=log_dir)
+ 
+        # Global step counter so TensorBoard x-axis is always increasing
+        # across folds and epochs
+        self.global_step = 0
+    
+    def save_checkpoint(self, epoch: int, val_accuracy: float):
+        """Save model weights and training state to disk.
+
+        Two files are maintained:
+          - latest.pt  : overwritten every epoch (safe resume point)
+          - best.pt    : overwritten only when val_accuracy improves
+        """
+        state = {
+            "epoch":          epoch,
+            "model_state":    self.model.state_dict(),
+            "optimizer_state": self.optimizer.state_dict(),
+            "val_accuracy":   val_accuracy,
+        }
+        latest_path = os.path.join(self.checkpoint_dir, "latest.pt")
+        torch.save(state, latest_path)
+ 
+        if val_accuracy > self.best_val_accuracy:
+            self.best_val_accuracy = val_accuracy
+            best_path = os.path.join(self.checkpoint_dir, "best.pt")
+            torch.save(state, best_path)
+            print(f"New best checkpoint saved (val_accuracy={val_accuracy:.4f})")
+    
+    def  load_checkpoint(self, path: str):
+        """Resume training from a checkpoint file."""
+        checkpoint = torch.load(path)
+        self.model.load_state_dict(checkpoint["model_state"])
+        self.optimizer.load_state_dict(checkpoint["optimizer_state"])
+        self.best_val_accuracy = checkpoint.get("val_accuracy", 0.0)
+        start_epoch = checkpoint["epoch"] + 1
+        print(f"Resumed from checkpoint '{path}' (epoch {checkpoint['epoch']})")
+        return start_epoch
+
+
+
+    def _train_single_epoch(self,train_loader: FoodDataLoader, epoch: int, fold: int):
+        """Train the model for one epoch on the training loader."""
         self.model.train()  # Set model to training mode
-        total_loss = 0.0
+        fold_loss = 0.0
 
-        for fold, train_loader, val_loader in self.dataloader.get_k_fold_dataloaders():  # Get the loaders from the first fold
+        seen = 0 # For tracking progress within fold
+
+        for images, labels in train_loader:
             self.optimizer.zero_grad()  # Clear gradients
-            seen = 0 # For tracking progress within fold
+            outputs = self.model(images)  # Forward pass
+            loss = self.criterion(outputs, labels)  # Compute loss
+            loss.backward()  # Backpropagation
+            self.optimizer.step()  # Update weights
 
-            for images, labels in train_loader:
-                outputs = self.model(images)  # Forward pass
-                loss = self.criterion(outputs, labels)  # Compute loss
-                loss.backward()  # Backpropagation
-                self.optimizer.step()  # Update weights
-                total_loss += loss.item() * images.size(0)  # Accumulate loss
-                seen += images.shape[0] # For tracking progress within fold
-                print(f"Fold progress: {seen}/{len(train_loader.dataset)}", end="\r")
 
-            print(f"Fold {fold}: Training loss = {total_loss / len(train_loader.dataset):.4f}")
+            fold_loss += loss.item() * images.size(0)  # Accumulate loss
+            seen += images.shape[0] # For tracking progress within fold
+            self.global_step += 1 # increment global step for TensorBoard
 
-    def evaluate(self, val_loader):
+            
+            # Per-batch loss — useful for spotting instability early
+            self.writer.add_scalar(
+                f"Loss/train_batch (fold {fold})",
+                loss.item(),
+                self.global_step
+            )
+            print(f"Fold {fold + 1}/{self.dataloader.k} progress: {seen}/{len(train_loader.dataset)}", end="\r")
+
+        avg_fold_loss = fold_loss / len(train_loader.dataset)
+        self.writer.add_scalar(f"\n Loss/train_epoch (fold {fold})", avg_fold_loss, epoch)
+
+        print(f"Fold {fold + 1}: Training loss = {avg_fold_loss :.4f}")
+ 
+        self.writer.add_scalar(f"Loss/train_epoch (fold {fold})", avg_fold_loss, epoch)
+
+
+    def evaluate(self, val_loader, epoch: int, fold: int) -> float:
         """Evaluate the model on the validation data."""
         self.model.eval()  # Set model to evaluation mode
         correct = 0
@@ -54,28 +123,64 @@ class Trainer:
                 correct += (predicted == labels).sum().item()  # Count correct predictions
 
         accuracy = correct / total if total > 0 else 0
-        print(f"Validation Accuracy: {accuracy:.4f}")
-    
-    def train(self):
-        """Train the model for the specified number of epochs, evaluating on validation data after each epoch."""
-        for epoch in range(self.num_epochs):
-            print(f"Epoch {epoch + 1}/{self.num_epochs}")
-            self.train_single_epoch()  # Train for one epoch
+        print(f"Fold {fold}: Validation Accuracy: {accuracy:.4f}")
+        self.writer.add_scalar(f"Accuracy/val (fold {fold})", accuracy, epoch)
+        return accuracy
 
-            # Evaluate on validation data from the first fold (for simplicity)
-            _, train_loader, val_loader = next(self.dataloader.get_k_fold_dataloaders())
-            self.evaluate(val_loader)
+
+
+    def train(self, resume_from: str = None):
+        """Train K different models for the specified number of epochs, with the option of resuming from a checkpoint."""
+        for fold, train_loader, val_loader in self.dataloader.get_k_fold_dataloaders():
+            print(f"Starting Fold {fold + 1}/{self.dataloader.k}")
+
+            # When starting a new fold, we should reset all parameters to start fresh
+            self.model.apply(
+                lambda layer: layer.reset_parameters() if hasattr(layer, 'reset_parameters') else None
+            )
+
+            # We should also reset the optimizer in case this carries any information from the previous fold
+            self.optimizer = torch.optim.Adam(model.parameters(), lr=self.config.training.learning_rate)
+
+            # And the best val_ac so far
+            self.best_val_accuracy = 0.0
+            start_epoch = 0
+
+            if resume_from:
+                start_epoch = self.load_checkpoint(resume_from)
+                resume_from = None # Only resume from checkpoint for the first fold, after that we want to continue training without loading again
+
+            for epoch in range(start_epoch, self.num_epochs):
+                print(f"\n  Epoch {epoch + 1}/{self.num_epochs}")
+ 
+                # Train for one epoch using this fold's training data
+                self._train_single_epoch(train_loader, epoch, fold)
+ 
+                # Evaluate on this fold's validation data
+                val_accuracy = self.evaluate(val_loader, epoch=epoch, fold=fold)
+ 
+                # Save a checkpoint if this is the best validation accuracy so far
+                is_best = val_accuracy > self.best_val_accuracy
+                if is_best:
+                    self.best_val_accuracy = val_accuracy
+                self.save_checkpoint(epoch, val_accuracy, is_best=is_best)
+
+        self.writer.close()
+        print("Congratulations Congratulations Congratulations!")
+        print("Training complete!")
+ 
+
 
 if __name__ == "__main__":
     # Quick sanity check for the Trainer class
-    with open("configs/standard_config.yaml", "r") as f:
+    with open("configs/test_config.yaml", "r") as f:
         config = yaml.safe_load(f)
     
     config = DictConfig(config) # Convert to DictConfig for consistency
     data = FoodDataset(config=config) # Use the config to initialize the dataset
     num_classes = len(data.labels_df['label'].unique()) # Dynamically determine number of classes from the dataset labels
     model = FoodClassifier(num_classes=num_classes, config=config)
-    dataloader = FoodDataLoader(data, batch_size=4, shuffle=True)
+    dataloader = FoodDataLoader(data, config=config)
 
     trainer = Trainer(model=model, dataloader=dataloader, config=config)
-    trainer.train_single_epoch()  # Just test one epoch for sanity check
+    trainer.train()
