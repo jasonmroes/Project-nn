@@ -73,34 +73,21 @@ class FoodDataset(torch.utils.data.Dataset):
 
 
         # Data directory + correct folder + specific image
-        image_path = self.image_dir +  str(image_name)
+        image_path = os.path.join(self.image_dir, str(image_name))
 
         # Load the Image and convert to RGB if not already
         image = Image.open(image_path).convert("RGB")
-
-        if image is None:
-            raise FileNotFoundError(f"Image not found: {image_path}")
-
-        # Transform images to be the same size and normalised
-        standardise = transforms.Compose([
-            transforms.Resize((self.image_shape)), # At minimum, resize images to the same size.
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]) # And normalize pixel values to [-1, 1] for better stability.
-
-        image = standardise(image)
 
         # apply augment_transform if provided to a fraction of the images in the training set (as specified in the yaml)
         if self.augment_transform:
             if random.random() < self.augment_fraction:
                 image = self.augment_transform(image)
+        
+        image = data.transformations.standardise(self.image_shape, image)
+
 
         return image, label
-    
-    # Allow iterating over the dataset rather than just returning one element
-    # yield is the alternative to 'return' that returns a generator rather than single value
-    def __iter__(self):
-        for idx in range(len(self)):
-            yield self[idx]
+
 
 # Test code
 # if __name__ == "__main__":

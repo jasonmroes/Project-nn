@@ -25,7 +25,7 @@ class Trainer:
         self.config = config
         self.dataloader = dataloader
         self.criterion = nn.CrossEntropyLoss() # simple choice for multi-class classification
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate, weight_decay=config.training.weight_decay)
         self.num_epochs = config.training.epochs
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -81,7 +81,7 @@ class Trainer:
     
     def  load_checkpoint(self, path: str):
         """Resume training from a checkpoint file."""
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path, weights_only=True)
         self.model.load_state_dict(checkpoint["model_state"])
         self.optimizer.load_state_dict(checkpoint["optimizer_state"])
         self.best_val_accuracy = checkpoint.get("val_accuracy", 0.0)
@@ -190,11 +190,7 @@ class Trainer:
                 current_lr = self.optimizer.param_groups[0]['lr']
                 self.writer.add_scalar(f"LR/fold_{fold}", current_lr, epoch)
 
- 
-                # Save a checkpoint if this is the best validation accuracy so far
-                
-                if val_accuracy > self.best_val_accuracy:
-                    self.best_val_accuracy = val_accuracy
+
                 self.save_checkpoint(epoch, val_accuracy)
 
         self.writer.close()

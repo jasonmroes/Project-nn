@@ -5,11 +5,11 @@ Use standard_config.yaml as base, load this using dictconfig (allows category.ch
 2. [x] Data preprocessing and augmentation (mirror, flip, crop ... to increase sample size)
 3. [x] Basic CNN model structure
 4. [x] Training loop. USE DATALOADER **WITH CONFIG** for k splitting and data augmentation, for the experiments which use these
-5. [] Add TensorBoard training logging so we have an idea what is happening
-5. [] Train the 'basic' setting 
-6. [] Write an inference.py to apply the trained model to the test set and generate an 'answer sheet' csv as specified 
-7. [] Different configs for different settings of K and data augmentation fractiosn
-8. [] Train all models and compare their performance
+5. [x] Add TensorBoard training logging so we have an idea what is happening
+6. [x] Train the 'basic' setting (k1_aug0_config.yaml is a model with no k-fold and no data augmentation)
+7. [] Write an inference.py to apply the trained model to the test set and generate an 'answer sheet' csv as specified 
+8. [] Different configs for different settings of K and data augmentation fractiosn
+9. [] Train all models and compare their performance
 ...
 
 3. Model
@@ -22,10 +22,12 @@ Use standard_config.yaml as base, load this using dictconfig (allows category.ch
 3. install pyproject.toml 'pip3 install -e .'
 
 4. If pytest doesn't work, run: "./.venv/bin/python" -m pytest -q
+
+5. If TensorBoard does not work, the temporary solution is to run the following within the venv: "pip3 install setuptools==81.0"
 # Inference
 1. 
 
 # Training
 1. download the dataset zip file from https://www.kaggle.com/competitions/food-recognition-challenge-2026/data
 
-2. extract the zip in to the /data folder
+2. extract the zip in to a folder /data

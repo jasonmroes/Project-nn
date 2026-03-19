@@ -62,9 +62,6 @@ class FoodDataLoader:
             self,
             indices: list,
             shuffle: bool,
-            data_dir: str,
-            labels_path: str,
-            image_dir: str,
             is_validation: bool = False
             ) -> DataLoader:
         """
@@ -109,8 +106,8 @@ class FoodDataLoader:
                 val_fraction=val_fraction,
                 seed=seed,
             )
-            train_loader = self._make_loader(train_indices, self.shuffle, data_dir, labels_path, image_dir)
-            val_loader   = self._make_loader(val_indices,   False,        data_dir, labels_path, image_dir)
+            train_loader = self._make_loader(train_indices, self.shuffle, False)
+            val_loader   = self._make_loader(val_indices,   False, True)
             return train_loader, val_loader
 
     #### K-fold cross-validation ####

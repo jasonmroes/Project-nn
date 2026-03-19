@@ -100,7 +100,7 @@ if __name__ == "__main__":
     logits = model(dummy)
 
     print(f"Input shape:  {dummy.shape}")
-    print(f"Output shape: {logits.shape}")   # expect (4, 50)
+    print(f"Output shape: {logits.shape}")   # expect (4, 80)
     assert logits.shape == (4, num_classes), "Output shape mismatch!"
 
     total_params = sum(p.numel() for p in model.parameters())

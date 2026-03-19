@@ -29,11 +29,11 @@ model:
   dropout_rate: 0.25
 
   use_batch_norm: true
-  # Activation function
+  # Activation function, not implemented
   # Possible options for this implementation are:
   # - "relu"
   # - "gelu"
-  activation: "gelu"
+  # activation: "gelu"
 
   # Loss function
   # Possible options for this implementation are:
