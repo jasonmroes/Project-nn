@@ -51,7 +51,7 @@ class FoodClassifier(nn.Module):
         dropout: Dropout probability before the final FC layer.
     """
 
-    def __init__(self, config: DictConfig, num_classes: int, dropout: float = 0.5):
+    def __init__(self, config: DictConfig, num_classes: int = 80, dropout: float = 0.5):
         super().__init__()
 
         if config:
@@ -72,7 +72,7 @@ class FoodClassifier(nn.Module):
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
 
         self.classifier = nn.Sequential(
-            nn.AdaptiveAvgPool2d((1, 1)),
+            nn.Flatten(),
             nn.Linear(256, 128),
             nn.ReLU(inplace=True),
             nn.Dropout(p=dropout),
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     config = DictConfig(config) # Convert to DictConfig for consistency
     data = FoodDataset(config=config) # Use the config to initialize the dataset
     num_classes = len(data.labels_df['label'].unique()) # Dynamically determine number of classes from the dataset labels
-    model = FoodClassifier(num_classes=num_classes)
+    model = FoodClassifier(config=config)
 
     dummy = torch.randn(4, 3, 224, 224)  # batch of 4 images
     logits = model(dummy)

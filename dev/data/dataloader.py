@@ -30,6 +30,7 @@ class FoodDataLoader:
             k: int = 4
             ):
         if config:
+            self.config = config
             batch_size = config.data.batch_size
             shuffle = config.data.shuffle
             num_workers = config.data.num_workers
@@ -75,6 +76,7 @@ class FoodDataLoader:
             image_dir: path to images, set in yaml
             """
         dataset = FoodDataset(
+            config=self.config,
             data_dir=data_dir,
             labels_path=labels_path,
             image_dir=image_dir,

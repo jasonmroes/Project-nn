@@ -42,7 +42,7 @@ model:
   use_class_weights: true
 
 training:
-  epochs: 5
+  epochs: 20
   learning_rate: 0.003
   save_dir: "./experiments/standard_config/"
   granularity: 100

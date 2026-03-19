@@ -10,7 +10,7 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
-  image_shape: [32, 32]
+  image_shape: [128, 128]
   batch_size: 64
   num_workers: 0
   classes: 80
@@ -18,7 +18,7 @@ data:
   val_fraction: 0.2
   augment_fraction: 0.5 # fraction of images in the training set that should be augmented per epoch
   augmentation_function: "rotate_translate_flip" # function name to be used as in dev/data/transformations.py
-  k: 1 # Number of folds for k-fold cross-validation 
+  k: 4 # Number of folds for k-fold cross-validation 
 
 model:
   #type: "late_fusion"

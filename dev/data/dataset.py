@@ -83,8 +83,8 @@ class FoodDataset(torch.utils.data.Dataset):
 
         # Transform images to be the same size and normalised
         standardise = transforms.Compose([
-            transforms.ToTensor(),
             transforms.Resize((self.image_shape)), # At minimum, resize images to the same size.
+            transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]) # And normalize pixel values to [-1, 1] for better stability.
 
         image = standardise(image)

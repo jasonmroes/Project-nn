@@ -23,7 +23,7 @@ class Trainer:
         self.config = config
         self.dataloader = dataloader
         self.criterion = nn.CrossEntropyLoss() # simple choice for multi-class classification
-        self.optimizer = torch.optim.Adam(model.parameters(), lr=config.training.learning_rate)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate)
         self.num_epochs = config.training.epochs
         
         # Checkpointing — save to experiments/checkpoints/ by default
@@ -102,7 +102,6 @@ class Trainer:
             print(f"Fold {fold + 1}/{self.dataloader.k} progress: {seen}/{len(train_loader.dataset)}", end="\r")
 
         avg_fold_loss = fold_loss / len(train_loader.dataset)
-        self.writer.add_scalar(f"\n Loss/train_epoch (fold {fold})", avg_fold_loss, epoch)
 
         print(f"Fold {fold + 1}: Training loss = {avg_fold_loss :.4f}")
  
@@ -173,7 +172,7 @@ class Trainer:
 
 if __name__ == "__main__":
     # Quick sanity check for the Trainer class
-    with open("configs/k1_aug0_config.yaml", "r") as f:
+    with open("configs/test_config.yaml", "r") as f:
         config = yaml.safe_load(f)
     
     config = DictConfig(config) # Convert to DictConfig for consistency
