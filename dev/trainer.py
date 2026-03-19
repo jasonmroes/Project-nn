@@ -25,6 +25,14 @@ class Trainer:
         self.criterion = nn.CrossEntropyLoss() # simple choice for multi-class classification
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate)
         self.num_epochs = config.training.epochs
+
+        # Step on plateau lr scheduler to reduce learning rate if validation accuracy plateaus
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer,
+            mode='max',       # we're monitoring val accuracy (higher is better)
+            factor=config.training.scheduler.gamma,         # reduce the lr when plateauing by factor of ...
+            patience=config.training.scheduler.step_size,   # wait ... epochs without improvement before reducing
+        )
         
         # Checkpointing — save to experiments/checkpoints/ by default
         self.checkpoint_dir = config.training.get("save_dir", "experiments/checkpoints/")

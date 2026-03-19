@@ -50,5 +50,5 @@ training:
 
   # TODO: Implement step on plateau scheduler
   scheduler:
-    step_size: 25
+    step_size: 2
     gamma: 0.5
