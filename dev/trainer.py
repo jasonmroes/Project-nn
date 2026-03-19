@@ -28,6 +28,10 @@ class Trainer:
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate)
         self.num_epochs = config.training.epochs
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print("Using device:", self.device)
+        self.model.to(self.device)
+
         # Step on plateau lr scheduler to reduce learning rate if validation accuracy plateaus
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizer,
@@ -95,6 +99,7 @@ class Trainer:
         seen = 0 # For tracking progress within fold
 
         for images, labels in train_loader:
+            images, labels = images.to(self.device), labels.to(self.device)  # Move data to the same device as the model
             self.optimizer.zero_grad()  # Clear gradients
             outputs = self.model(images)  # Forward pass
             loss = self.criterion(outputs, labels)  # Compute loss
@@ -130,6 +135,7 @@ class Trainer:
 
         with torch.no_grad():  # No need to compute gradients during evaluation
             for images, labels in val_loader:
+                images, labels = images.to(self.device), labels.to(self.device)  # Move data to the same device as the model
                 outputs = self.model(images)  # Forward pass
                 _, predicted = torch.max(outputs.data, 1)  # Get predicted class
                 total += labels.size(0)
@@ -151,6 +157,7 @@ class Trainer:
             self.model.apply(
                 lambda layer: layer.reset_parameters() if hasattr(layer, 'reset_parameters') else None
             )
+            self.model = self.model.to(self.device) # Ensure model is on the correct device after resetting parameters
 
             # We should also reset the optimizer and schedulerin case this carries any information from the previous fold
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.training.learning_rate)
