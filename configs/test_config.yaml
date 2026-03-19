@@ -10,7 +10,7 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
-  image_shape: [224, 224]
+  image_shape: [32, 32]
   batch_size: 64
   classes: 80
     
@@ -24,15 +24,15 @@ model:
   use_class_weights: true
 
 training:
-  epochs: 3
+  epochs: 30
   learning_rate: 0.001
   save_dir: "./experiments/test_config/"
   log_dir: "runs/"
   num_workers: 0
   granularity: 100
-  weight_decay: 0.0001
+  weight_decay: 0.001
 
   # TODO: Implement step on plateau scheduler
   scheduler:
-    step_size: 2
+    step_size: 5
     gamma: 0.5

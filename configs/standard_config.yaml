@@ -25,15 +25,15 @@ model:
   use_class_weights: true
 
 training:
-  epochs: 20
+  epochs: 30
   learning_rate: 0.001
   save_dir: "./experiments/standard_config/"
   log_dir: "runs/"
   num_workers: 0
   granularity: 100
-  weight_decay: 0.015
+  weight_decay: 0.0001
 
   # TODO: Implement step on plateau scheduler
   scheduler:
-    step_size: 2
+    step_size: 5
     gamma: 0.5
