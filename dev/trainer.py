@@ -44,8 +44,8 @@ class Trainer:
 
         # TensorBoard writer
         run_name = f"{config.experiment_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        os.makedirs(log_dir, exist_ok=True)
         log_dir = os.path.join(config.training.get("log_dir", "runs/"), run_name)
+        os.makedirs(log_dir, exist_ok=True)
         print("Logging TensorBoard data to:", log_dir)
         self.writer = SummaryWriter(log_dir=log_dir)
  
