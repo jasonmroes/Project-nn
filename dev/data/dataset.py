@@ -32,7 +32,7 @@ class FoodDataset(torch.utils.data.Dataset):
             data_dir: str = "data/",
             labels_path: str = "data/train_labels.csv",
             image_dir: str = "data/train_set/train_set/train_set/",
-            image_shape: list = [128, 128],
+            image_shape: list = [224, 224],
             indices: list =  None, # Optional: load samples indicated by the indices from train/val, as split by split.py
             val_fraction: float = 0.1,
             augment_transform: transforms.Compose = None, # TODO reference yaml
@@ -59,6 +59,7 @@ class FoodDataset(torch.utils.data.Dataset):
         self.labels_df = pd.read_csv(labels_path) # Loads **all** labels from labels.csv
 
         self.standardise = transforms.Compose([
+            transforms.Resize(self.image_shape),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         ])
@@ -82,7 +83,6 @@ class FoodDataset(torch.utils.data.Dataset):
 
         # Load the Image and convert to RGB if not already
         image = Image.open(image_path).convert("RGB")
-        image =  transforms.Resize(tuple(self.image_shape))(image) # Resize image to shape in yaml before all else
 
         # apply augment_transform if provided to a fraction of the images in the training set (as specified in the yaml)
         if self.augment_transform:

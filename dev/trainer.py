@@ -24,13 +24,15 @@ class Trainer:
         self.model = model
         self.config = config
         self.dataloader = dataloader
-        self.criterion = nn.CrossEntropyLoss(weight=class_weights) # simple choice for multi-class classification
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate, weight_decay=config.training.weight_decay)
         self.num_epochs = config.training.epochs
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("Using device:", self.device)
         self.model.to(self.device)
+
+        self.criterion = nn.CrossEntropyLoss(weight=class_weights.to(self.device)) # simple choice for multi-class classification
+
 
         # Step on plateau lr scheduler to reduce learning rate if validation accuracy plateaus
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(

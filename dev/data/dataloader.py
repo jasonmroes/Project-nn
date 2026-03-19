@@ -17,7 +17,7 @@ class FoodDataLoader:
         indices: list = None, Optional: load samples indicated by the indices from train/val, as split by split.py
         batch_size: int = 32, number of samples per batch
         shuffle: bool = True, whether to shuffle the data at every epoch
-        num_workers: int = 0, number of subprocesses to use for data loading
+        max_workers: int = 0, maximum number of subprocesses to use for data loading
         k: int = 4, Number of folds for k-fold cross-validation (if using k-fold)
     """
     def __init__(
@@ -27,7 +27,7 @@ class FoodDataLoader:
             indices: list = None,
             batch_size: int = 32,
             shuffle: bool = True,
-            num_workers: int = 0,
+            max_workers: int = 8,
             k: int = 4
             ):
         if config:
@@ -138,7 +138,7 @@ class FoodDataLoader:
             yield fold, train_loader, val_loader
 
 
-# Test the dataloader
+# Test the dataloader, now broken.
 if __name__ == "__main__":
     dataset = FoodDataset()
     dataloader = FoodDataLoader(dataset, batch_size=4, shuffle=False)

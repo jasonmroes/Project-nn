@@ -29,7 +29,7 @@ training:
   learning_rate: 0.001
   save_dir: "./experiments/standard_config/"
   log_dir: "runs/"
-  num_workers: 0
+  num_workers: 8
   granularity: 100
   weight_decay: 0.0001
 

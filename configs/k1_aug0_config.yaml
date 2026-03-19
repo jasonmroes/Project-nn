@@ -29,8 +29,8 @@ training:
   save_dir: "./experiments/k1_aug0_config/"
   log_dir: "runs/k1_aug0_config/"
   granularity: 100
-  num_workers: 0
-  weight_decay: 0.001
+  num_workers: 8
+  weight_decay: 0.0001
 
   # TODO: Implement step on plateau scheduler
   scheduler:
