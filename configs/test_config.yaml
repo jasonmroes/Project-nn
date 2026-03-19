@@ -1,7 +1,7 @@
 # Test. Uses smaller image size and 1 epoch for code testing purposes only.. Configuration for this model. Based on configuration file used in
 # previous MLOps project. Adjusted for this project.
 
-experiment_name: "tcga_champion"
+experiment_name: "project_nn_test"
 seed: 42
 
 data:

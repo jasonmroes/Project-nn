@@ -8,6 +8,8 @@ import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 from omegaconf import DictConfig
+from datetime import datetime
+
 
 # Trainer code generated with Claude
 class Trainer:
@@ -39,8 +41,10 @@ class Trainer:
         os.makedirs(self.checkpoint_dir, exist_ok=True)
         self.best_val_accuracy = 0.0
  
-        # TensorBoard writer — logs written to runs/ by default
-        log_dir = config.training.get("log_dir", "runs/")
+
+        # TensorBoard writer
+        run_name = f"{config.experiment_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        log_dir = config.training.get("log_dir", run_name)
         self.writer = SummaryWriter(log_dir=log_dir)
  
         # Global step counter so TensorBoard x-axis is always increasing

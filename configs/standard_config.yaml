@@ -1,7 +1,7 @@
 # Standard Configuration for this model. Based on configuration file used in
 # previous MLOps project. Adjusted for this project.
 
-experiment_name: "tcga_champion"
+experiment_name: "project_nn_standard"
 seed: 42
 
 data:
@@ -9,6 +9,7 @@ data:
   data_path: "data/dataset_split"
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
+  log_dir: "runs/"
   shuffle: true
   image_shape: [224, 224]
   batch_size: 64
