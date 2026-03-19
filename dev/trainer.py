@@ -44,7 +44,9 @@ class Trainer:
 
         # TensorBoard writer
         run_name = f"{config.experiment_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        log_dir = config.training.get("log_dir", run_name)
+        os.makedirs(log_dir, exist_ok=True)
+        log_dir = os.path.join(config.training.get("log_dir", "runs/"), run_name)
+        print("Logging TensorBoard data to:", log_dir)
         self.writer = SummaryWriter(log_dir=log_dir)
  
         # Global step counter so TensorBoard x-axis is always increasing
@@ -150,8 +152,14 @@ class Trainer:
                 lambda layer: layer.reset_parameters() if hasattr(layer, 'reset_parameters') else None
             )
 
-            # We should also reset the optimizer in case this carries any information from the previous fold
+            # We should also reset the optimizer and schedulerin case this carries any information from the previous fold
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.training.learning_rate)
+            self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(  # ← missing
+                self.optimizer,
+                mode='max',
+                factor=self.config.training.scheduler.gamma,
+                patience=self.config.training.scheduler.step_size,
+            )
 
             # And the best val_ac so far
             self.best_val_accuracy = 0.0
@@ -169,6 +177,12 @@ class Trainer:
  
                 # Evaluate on this fold's validation data
                 val_accuracy = self.evaluate(val_loader, epoch=epoch, fold=fold)
+                self.scheduler.step(val_accuracy) 
+
+                # Log the current learning rate to TensorBoard
+                current_lr = self.optimizer.param_groups[0]['lr']
+                self.writer.add_scalar(f"LR/fold_{fold}", current_lr, epoch)
+
  
                 # Save a checkpoint if this is the best validation accuracy so far
                 
