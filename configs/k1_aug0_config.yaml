@@ -12,7 +12,6 @@ data:
   shuffle: true
   image_shape: [224, 224]
   batch_size: 64
-  num_workers: 0
   classes: 80
     
   val_fraction: 0.2
@@ -30,6 +29,7 @@ training:
   save_dir: "./experiments/k1_aug0_config/"
   log_dir: "runs/"
   granularity: 100
+  num_workers: 0
   weight_decay: 0.015
 
   # TODO: Implement step on plateau scheduler

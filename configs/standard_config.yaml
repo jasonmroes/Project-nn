@@ -12,7 +12,6 @@ data:
   shuffle: true
   image_shape: [224, 224]
   batch_size: 64
-  num_workers: 0
   classes: 80
     
   val_fraction: 0.2
@@ -30,6 +29,7 @@ training:
   learning_rate: 0.001
   save_dir: "./experiments/standard_config/"
   log_dir: "runs/"
+  num_workers: 0
   granularity: 100
   weight_decay: 0.015
 
