@@ -55,7 +55,7 @@ def parse_args():
 def load_model(checkpoint_path: str, config: DictConfig, device: torch.device) -> FoodClassifier:
     """Load the FoodClassifier from a checkpoint file."""
     model = FoodClassifier(config=config)
-    checkpoint = torch.load(checkpoint_path, map_location=device)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint["model_state"])
     model.to(device)
     model.eval()

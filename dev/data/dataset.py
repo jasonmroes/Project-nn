@@ -58,6 +58,11 @@ class FoodDataset(torch.utils.data.Dataset):
         self.augment_fraction = augment_fraction
         self.labels_df = pd.read_csv(labels_path) # Loads **all** labels from labels.csv
 
+        self.standardise = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
+
     def __len__(self):
         if self.indices is not None:
             return len(self.indices)
@@ -77,13 +82,14 @@ class FoodDataset(torch.utils.data.Dataset):
 
         # Load the Image and convert to RGB if not already
         image = Image.open(image_path).convert("RGB")
+        image =  transforms.Resize(tuple(self.image_shape))(image) # Resize image to shape in yaml before all else
 
         # apply augment_transform if provided to a fraction of the images in the training set (as specified in the yaml)
         if self.augment_transform:
             if random.random() < self.augment_fraction:
                 image = self.augment_transform(image)
         
-        image = data.transformations.standardise(self.image_shape, image)
+        image = self.standardise(image)
 
 
         return image, label

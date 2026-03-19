@@ -21,24 +21,7 @@ data:
   k: 1 # Number of folds for k-fold cross-validation. 1 for simple train-val split
 
 model:
-  #type: "late_fusion"
-
-  # Multi-modal dimensions
-  #visual_dim: 768   # TITAN embeddings dimension
-
   dropout_rate: 0.25
-
-  use_batch_norm: true
-  # Activation function, not implemented
-  # Possible options for this implementation are:
-  # - "relu"
-  # - "gelu"
-  # activation: "gelu"
-
-  # Loss function
-  # Possible options for this implementation are:
-  # - "CrossEntropyLoss"
-  criterion: "CrossEntropyLoss"
   use_class_weights: true
 
 training:

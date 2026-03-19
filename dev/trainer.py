@@ -24,7 +24,7 @@ class Trainer:
         self.model = model
         self.config = config
         self.dataloader = dataloader
-        self.criterion = nn.CrossEntropyLoss() # simple choice for multi-class classification
+        self.criterion = nn.CrossEntropyLoss(weight=config.training.class_weights) # simple choice for multi-class classification
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate, weight_decay=config.training.weight_decay)
         self.num_epochs = config.training.epochs
 
@@ -131,6 +131,7 @@ class Trainer:
         """Evaluate the model on the validation data."""
         self.model.eval()  # Set model to evaluation mode
         correct = 0
+        correct_top5 = 0 # Also track whether the model puts the correct option in its 'top 5 guesses'
         total = 0
 
         with torch.no_grad():  # No need to compute gradients during evaluation
@@ -140,10 +141,17 @@ class Trainer:
                 _, predicted = torch.max(outputs.data, 1)  # Get predicted class
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()  # Count correct predictions
+                correct_top5 += (labels.unsqueeze(1) == torch.topk(outputs, 5, dim=1).indices).any(dim=1).sum().item() # 
+
 
         accuracy = correct / total if total > 0 else 0
         print(f"Fold {fold + 1}: Validation Accuracy: {accuracy:.4f}")
+
+        top5_accuracy = correct_top5 / total if total > 0 else 0
+        print(f"Fold {fold + 1}: Validation Top-5 Accuracy: {top5_accuracy:.4f}")
+
         self.writer.add_scalar(f"Accuracy/val (fold {fold})", accuracy, epoch)
+        self.writer.add_scalar(f"Accuracy/val_top5 (fold {fold})", top5_accuracy, epoch)
         return accuracy
 
 
@@ -160,7 +168,7 @@ class Trainer:
             self.model = self.model.to(self.device) # Ensure model is on the correct device after resetting parameters
 
             # We should also reset the optimizer and schedulerin case this carries any information from the previous fold
-            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.training.learning_rate)
+            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.training.learning_rate, weight_decay=self.config.training.weight_decay)
             self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(  # ← missing
                 self.optimizer,
                 mode='max',

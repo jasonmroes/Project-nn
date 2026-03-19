@@ -12,7 +12,6 @@ data:
   shuffle: true
   image_shape: [224, 224]
   batch_size: 64
-  num_workers: 0
   classes: 80
     
   val_fraction: 0.2
@@ -21,24 +20,7 @@ data:
   k: 1 # Number of folds for k-fold cross-validation 
 
 model:
-  #type: "late_fusion"
-
-  # Multi-modal dimensions
-  #visual_dim: 768   # TITAN embeddings dimension
-
   dropout_rate: 0.25
-
-  use_batch_norm: true
-  # Activation function
-  # Possible options for this implementation are:
-  # - "relu"
-  # - "gelu"
-  activation: "gelu"
-
-  # Loss function
-  # Possible options for this implementation are:
-  # - "CrossEntropyLoss"
-  criterion: "CrossEntropyLoss"
   use_class_weights: true
 
 training:
@@ -46,6 +28,7 @@ training:
   learning_rate: 0.001
   save_dir: "./experiments/test_config/"
   log_dir: "runs/"
+  num_workers: 0
   granularity: 100
   weight_decay: 0.0001
 

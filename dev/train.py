@@ -50,6 +50,7 @@ def main():
     dataset = FoodDataset(config=config)
     dataloader = FoodDataLoader(dataset, config=config)
     model = FoodClassifier(config=config)
+    model = torch.compile(model) # Use torch.compile for faster training if available
     trainer = Trainer(config=config, model=model, dataloader=dataloader)
 
     # Start training, optionally resuming from a checkpoint

@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 from omegaconf import DictConfig # for loading config yaml
 from data.dataset import FoodDataset
 from data.split import split_train_val, split_kfold
+import os
 
 
 # DataLoader class to create batches of data for training and validation.
@@ -43,6 +44,7 @@ class FoodDataLoader:
         self.num_workers = num_workers
         self.k = k
 
+        self.num_workers = 0 if torch.cuda.is_available() else min(os.cpu_count() // 2, config.training.num_worders) # Only use more workers on cpu for multithreading
     # def get_dataloader(
     #         self,
     #         data_dir:str = "data/",
@@ -132,8 +134,8 @@ class FoodDataLoader:
             seed=seed,
         )
         for fold, (train_indices, val_indices) in enumerate(splits):
-            train_loader = self._make_loader(train_indices, self.shuffle, data_dir, labels_path, image_dir, is_validation=False)
-            val_loader   = self._make_loader(val_indices,   False,        data_dir, labels_path, image_dir, is_validation=True)
+            train_loader = self._make_loader(train_indices, self.shuffle, is_validation=False)
+            val_loader   = self._make_loader(val_indices, False, is_validation=True)
             yield fold, train_loader, val_loader
 
 
