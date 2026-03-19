@@ -43,7 +43,7 @@ model:
 
 training:
   epochs: 5
-  learning_rate: 0.0005
+  learning_rate: 0.003
   save_dir: "./experiments/k1_aug0_config/"
   granularity: 100
   weight_decay: 0.015

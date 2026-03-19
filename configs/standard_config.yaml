@@ -42,8 +42,8 @@ model:
   use_class_weights: true
 
 training:
-  epochs: 10
-  learning_rate: 0.0005
+  epochs: 5
+  learning_rate: 0.003
   save_dir: "./experiments/standard_config/"
   granularity: 100
   weight_decay: 0.015

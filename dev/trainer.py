@@ -123,7 +123,7 @@ class Trainer:
                 correct += (predicted == labels).sum().item()  # Count correct predictions
 
         accuracy = correct / total if total > 0 else 0
-        print(f"Fold {fold}: Validation Accuracy: {accuracy:.4f}")
+        print(f"Fold {fold + 1}: Validation Accuracy: {accuracy:.4f}")
         self.writer.add_scalar(f"Accuracy/val (fold {fold})", accuracy, epoch)
         return accuracy
 

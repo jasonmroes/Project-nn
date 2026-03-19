@@ -72,7 +72,7 @@ class FoodClassifier(nn.Module):
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
 
         self.classifier = nn.Sequential(
-            nn.Flatten(),
+            nn.AdaptiveAvgPool2d((1, 1)),
             nn.Linear(256, 128),
             nn.ReLU(inplace=True),
             nn.Dropout(p=dropout),
