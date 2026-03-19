@@ -44,7 +44,7 @@ class FoodDataLoader:
         self.num_workers = num_workers
         self.k = k
 
-        self.num_workers = 0 if torch.cuda.is_available() else min(os.cpu_count() // 2, config.training.num_worders) # Only use more workers on cpu for multithreading
+        self.num_workers = min(os.cpu_count() // 2, config.training.num_workers) if torch.cuda.is_available() else 0 # Only use more workers on gpu for multithreading
     # def get_dataloader(
     #         self,
     #         data_dir:str = "data/",

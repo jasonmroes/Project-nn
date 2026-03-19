@@ -48,10 +48,18 @@ def main():
 
     # Initialise dataset, dataloader, model, and trainer
     dataset = FoodDataset(config=config)
+
+    # Determine amount per class for weighted sampling
+    # in train.py, after dataset is created
+    label_counts = dataset.labels_df.iloc[:, 1].value_counts().sort_index()
+    class_weights = (1.0 / label_counts).values
+    class_weights = torch.tensor(class_weights / class_weights.sum(), dtype=torch.float32)
+    # then pass to Trainer
+
     dataloader = FoodDataLoader(dataset, config=config)
     model = FoodClassifier(config=config)
     model = torch.compile(model) # Use torch.compile for faster training if available
-    trainer = Trainer(config=config, model=model, dataloader=dataloader)
+    trainer = Trainer(config=config, model=model, dataloader=dataloader, class_weights=class_weights)
 
     # Start training, optionally resuming from a checkpoint
     trainer.train(resume_from=args.resume)

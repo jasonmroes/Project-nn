@@ -13,7 +13,7 @@ from datetime import datetime
 
 # Trainer code generated with Claude
 class Trainer:
-    def __init__(self, config: DictConfig, model: nn.Module, dataloader: FoodDataLoader):
+    def __init__(self, config: DictConfig, model: nn.Module, dataloader: FoodDataLoader, class_weights: torch.Tensor):
         """Trainer class to handle the training loop, evaluation, checkpointing, and logging.
         Args:
             model: The neural network model to be trained.
@@ -24,7 +24,7 @@ class Trainer:
         self.model = model
         self.config = config
         self.dataloader = dataloader
-        self.criterion = nn.CrossEntropyLoss(weight=config.training.class_weights) # simple choice for multi-class classification
+        self.criterion = nn.CrossEntropyLoss(weight=class_weights) # simple choice for multi-class classification
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config.training.learning_rate, weight_decay=config.training.weight_decay)
         self.num_epochs = config.training.epochs
 
