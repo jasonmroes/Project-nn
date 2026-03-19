@@ -34,17 +34,16 @@ class FoodDataLoader:
             self.config = config
             batch_size = config.data.batch_size
             shuffle = config.data.shuffle
-            num_workers = config.data.num_workers
+            max_workers = config.training.num_workers
             k = config.data.k
 
         self.dataset = dataset
         self.indices = indices
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.num_workers = num_workers
         self.k = k
 
-        self.num_workers = min(os.cpu_count() // 2, config.training.num_workers) if torch.cuda.is_available() else 0 # Only use more workers on gpu for multithreading
+        self.num_workers = min(os.cpu_count() // 2, max_workers) if torch.cuda.is_available() else 0 # Only use more workers on gpu for multithreading
     # def get_dataloader(
     #         self,
     #         data_dir:str = "data/",

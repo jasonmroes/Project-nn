@@ -54,7 +54,7 @@ def main():
     label_counts = dataset.labels_df.iloc[:, 1].value_counts().sort_index()
     class_weights = (1.0 / label_counts).values
     class_weights = torch.tensor(class_weights / class_weights.sum(), dtype=torch.float32)
-    # then pass to Trainer
+
 
     dataloader = FoodDataLoader(dataset, config=config)
     model = FoodClassifier(config=config)

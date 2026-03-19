@@ -218,5 +218,14 @@ if __name__ == "__main__":
     model = FoodClassifier(num_classes=num_classes, config=config)
     dataloader = FoodDataLoader(data, config=config)
 
-    trainer = Trainer(model=model, dataloader=dataloader, config=config)
+
+    # Determine amount per class for weighted sampling
+    # in train.py, after dataset is created
+    label_counts = data.labels_df.iloc[:, 1].value_counts().sort_index()
+    class_weights = (1.0 / label_counts).values
+    class_weights = torch.tensor(class_weights / class_weights.sum(), dtype=torch.float32)
+
+
+
+    trainer = Trainer(model=model, dataloader=dataloader, config=config, class_weights=class_weights)
     trainer.train()
