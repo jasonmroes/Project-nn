@@ -65,6 +65,7 @@ class FoodDataLoader:
             data_dir: str,
             labels_path: str,
             image_dir: str,
+            is_validation: bool = False
             ) -> DataLoader:
         """
         Helper function to create a DataLoader for a given set of indices and shuffle setting
@@ -77,10 +78,8 @@ class FoodDataLoader:
             """
         dataset = FoodDataset(
             config=self.config,
-            data_dir=data_dir,
-            labels_path=labels_path,
-            image_dir=image_dir,
             indices=indices,
+            augment_fraction=0.0 if is_validation else self.config.data.augment_fraction, # Only augment training data
         )
         return DataLoader(
             dataset,
@@ -136,8 +135,8 @@ class FoodDataLoader:
             seed=seed,
         )
         for fold, (train_indices, val_indices) in enumerate(splits):
-            train_loader = self._make_loader(train_indices, self.shuffle, data_dir, labels_path, image_dir)
-            val_loader   = self._make_loader(val_indices,   False,        data_dir, labels_path, image_dir)
+            train_loader = self._make_loader(train_indices, self.shuffle, data_dir, labels_path, image_dir, is_validation=False)
+            val_loader   = self._make_loader(val_indices,   False,        data_dir, labels_path, image_dir, is_validation=True)
             yield fold, train_loader, val_loader
 
 

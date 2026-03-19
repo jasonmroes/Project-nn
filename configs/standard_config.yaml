@@ -10,7 +10,7 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
-  image_shape: [128, 128]
+  image_shape: [224, 224]
   batch_size: 64
   num_workers: 0
   classes: 80
@@ -43,7 +43,7 @@ model:
 
 training:
   epochs: 20
-  learning_rate: 0.003
+  learning_rate: 0.001
   save_dir: "./experiments/standard_config/"
   granularity: 100
   weight_decay: 0.015

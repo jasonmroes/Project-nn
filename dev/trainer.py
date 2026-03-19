@@ -139,7 +139,7 @@ class Trainer:
             )
 
             # We should also reset the optimizer in case this carries any information from the previous fold
-            self.optimizer = torch.optim.Adam(model.parameters(), lr=self.config.training.learning_rate)
+            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.training.learning_rate)
 
             # And the best val_ac so far
             self.best_val_accuracy = 0.0
