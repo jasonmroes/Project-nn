@@ -7,7 +7,7 @@ Use standard_config.yaml as base, load this using dictconfig (allows category.ch
 4. [x] Training loop. USE DATALOADER **WITH CONFIG** for k splitting and data augmentation, for the experiments which use these
 5. [x] Add TensorBoard training logging so we have an idea what is happening
 6. [x] Train the 'basic' setting (k1_aug0_config.yaml is a model with no k-fold and no data augmentation)
-7. [] Write an inference.py to apply the trained model to the test set and generate an 'answer sheet' csv as specified 
+7. [x] Write an inference.py to apply the trained model to the test set and generate an 'answer sheet' csv as specified 
 8. [] Different configs for different settings of K and data augmentation fractiosn
 9. [] Train all models and compare their performance
 ...
@@ -25,9 +25,23 @@ Use standard_config.yaml as base, load this using dictconfig (allows category.ch
 
 5. If TensorBoard does not work, the temporary solution is to run the following within the venv: "pip3 install setuptools==81.0"
 # Inference
-1. 
+1. Activate venv from the project root folder
+
+2. Find which model checkpoint you want to use in experiments/
+
+3. Find the path to the CORRESPONDING  config
+
+4. Find the path to the folder containing the images to be classified
+
+5. python --checkpoint 'path_to_pt' --image_dir 'path_to_image_dir' --config 'path_to_config' --output 'optional_path_to_output_csv'
 
 # Training
 1. download the dataset zip file from https://www.kaggle.com/competitions/food-recognition-challenge-2026/data
 
 2. extract the zip in to a folder /data
+
+3. Find the path to the config you want to use for training
+
+4. activate venv
+
+5. python dev/train.py --config 'path_to_config'
