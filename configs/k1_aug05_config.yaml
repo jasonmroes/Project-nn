@@ -1,7 +1,7 @@
-# Standard Configuration for this model. Based on configuration file used in
+# K=1, augment_fraction=0.5. Configuration for this model. Based on configuration file used in
 # previous MLOps project. Adjusted for this project.
 
-experiment_name: "project_nn_standard"
+experiment_name: "project_nn_k1_aug0.5"
 seed: 42
 
 data:
@@ -17,20 +17,19 @@ data:
   val_fraction: 0.2
   augment_fraction: 0.5 # fraction of images in the training set that should be augmented per epoch
   augmentation_function: "rotate_translate_flip" # function name to be used as in dev/data/transformations.py
-  k: 4 # Number of folds for k-fold cross-validation 
+  k: 1 # Number of folds for k-fold cross-validation. 1 for simple train-val split
 
 model:
-
   dropout_rate: 0.25
   use_class_weights: true
 
 training:
   epochs: 30
   learning_rate: 0.001
-  save_dir: "./experiments/standard_config/"
-  log_dir: "runs/"
-  num_workers: 8
+  save_dir: "./experiments/k1_aug0.5_config/"
+  log_dir: "runs/k1_aug0.5_config/"
   granularity: 100
+  num_workers: 8
   weight_decay: 0.0001
 
   # TODO: Implement step on plateau scheduler

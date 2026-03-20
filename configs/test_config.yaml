@@ -1,7 +1,7 @@
-# Standard Configuration for this model. Based on configuration file used in
+# Test. Uses smaller image size and 2 kfold for code testing purposes only.. Configuration for this model. Based on configuration file used in
 # previous MLOps project. Adjusted for this project.
 
-experiment_name: "project_nn_standard"
+experiment_name: "project_nn_test"
 seed: 42
 
 data:
@@ -10,24 +10,23 @@ data:
   labels_path: "data/train_labels.csv"
   image_dir: "data/train_set/train_set/train_set/"
   shuffle: true
-  image_shape: [224, 224]
-  batch_size: 64
+  image_shape: [32, 32]
+  batch_size: 32
   classes: 80
     
   val_fraction: 0.2
   augment_fraction: 0.5 # fraction of images in the training set that should be augmented per epoch
   augmentation_function: "rotate_translate_flip" # function name to be used as in dev/data/transformations.py
-  k: 4 # Number of folds for k-fold cross-validation 
+  k: 2 # Number of folds for k-fold cross-validation 
 
 model:
-
   dropout_rate: 0.25
   use_class_weights: true
 
 training:
   epochs: 30
   learning_rate: 0.001
-  save_dir: "./experiments/standard_config/"
+  save_dir: "./experiments/test_config/"
   log_dir: "runs/"
   num_workers: 8
   granularity: 100

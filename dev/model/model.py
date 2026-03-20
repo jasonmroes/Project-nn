@@ -51,8 +51,12 @@ class FoodClassifier(nn.Module):
         dropout: Dropout probability before the final FC layer.
     """
 
-    def __init__(self, num_classes: int, dropout: float = 0.5):
+    def __init__(self, config: DictConfig, num_classes: int = 80, dropout: float = 0.5):
         super().__init__()
+
+        if config:
+            num_classes = config.data.classes
+            dropout = config.model.dropout_rate
 
         self.features = nn.Sequential(
             ConvBlock(3,   32,  pool=True),   # -> (B, 32,  112, 112)
@@ -90,13 +94,13 @@ if __name__ == "__main__":
     config = DictConfig(config) # Convert to DictConfig for consistency
     data = FoodDataset(config=config) # Use the config to initialize the dataset
     num_classes = len(data.labels_df['label'].unique()) # Dynamically determine number of classes from the dataset labels
-    model = FoodClassifier(num_classes=num_classes)
+    model = FoodClassifier(config=config)
 
     dummy = torch.randn(4, 3, 224, 224)  # batch of 4 images
     logits = model(dummy)
 
     print(f"Input shape:  {dummy.shape}")
-    print(f"Output shape: {logits.shape}")   # expect (4, 50)
+    print(f"Output shape: {logits.shape}")   # expect (4, 80)
     assert logits.shape == (4, num_classes), "Output shape mismatch!"
 
     total_params = sum(p.numel() for p in model.parameters())

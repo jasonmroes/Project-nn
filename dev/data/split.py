@@ -47,12 +47,17 @@ def split_kfold(
         shuffle: bool = True,
         seed: int = 42,
         ) -> list[tuple[list, list]]:
-    """Return a list of k (train_indices, val_indices) tuples for k-fold cross-validation."""
+    """Return a list of k (train_indices, val_indices) tuples for k-fold cross-validation.
+    if k=1, this will just return one split based on the val_fraction, as in split_train_val."""
 
     if config:
         labels_path = config.data.labels_path
         k           = config.data.k
         shuffle     = config.data.shuffle
+    
+    if k == 1:
+        # Just do a single split based on val_fraction
+        return [split_train_val(config=config)]
  
     labels_df   = pd.read_csv(labels_path)
     num_samples = len(labels_df)

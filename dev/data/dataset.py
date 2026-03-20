@@ -32,6 +32,7 @@ class FoodDataset(torch.utils.data.Dataset):
             data_dir: str = "data/",
             labels_path: str = "data/train_labels.csv",
             image_dir: str = "data/train_set/train_set/train_set/",
+            image_shape: list = [224, 224],
             indices: list =  None, # Optional: load samples indicated by the indices from train/val, as split by split.py
             val_fraction: float = 0.1,
             augment_transform: transforms.Compose = None, # TODO reference yaml
@@ -43,17 +44,25 @@ class FoodDataset(torch.utils.data.Dataset):
             labels_path = config.data.labels_path
             image_dir = config.data.image_dir
             val_fraction = config.data.val_fraction
+            image_shape = config.data.image_shape
             augment_fraction = config.data.augment_fraction
             augment_transform = getattr(data.transformations, config.data.augmentation_function) # Get the augmentation function from the transformations module based on the name in the yaml
 
         self.data_dir = data_dir
         self.labels_path = labels_path
         self.image_dir = image_dir
+        self.image_shape = image_shape
         self.val_fraction = val_fraction
         self.indices = indices
         self.augment_transform = augment_transform
         self.augment_fraction = augment_fraction
         self.labels_df = pd.read_csv(labels_path) # Loads **all** labels from labels.csv
+
+        self.standardise = transforms.Compose([
+            transforms.Resize(self.image_shape),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
 
     def __len__(self):
         if self.indices is not None:
@@ -66,38 +75,25 @@ class FoodDataset(torch.utils.data.Dataset):
             idx = self.indices[idx] # Map the provided index to the actual index in the labels dataframe
 
         image_name = self.labels_df.iloc[idx, 0] # the first column contains image filenames
-        label = self.labels_df.iloc[idx, 1] # the second column contains labels
+        label = self.labels_df.iloc[idx, 1] - 1 # the second column contains labels, convert 1-indexed to 0-indexed
 
 
         # Data directory + correct folder + specific image
-        image_path = self.image_dir +  str(image_name)
+        image_path = os.path.join(self.image_dir, str(image_name))
 
         # Load the Image and convert to RGB if not already
         image = Image.open(image_path).convert("RGB")
-
-        if image is None:
-            raise FileNotFoundError(f"Image not found: {image_path}")
-
-        # Transform images to be the same size and normalised
-        standardise = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Resize((128, 128)), # At minimum, resize images to the same size.
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]) # And normalize pixel values to [-1, 1] for better stability.
-
-        image = standardise(image)
 
         # apply augment_transform if provided to a fraction of the images in the training set (as specified in the yaml)
         if self.augment_transform:
             if random.random() < self.augment_fraction:
                 image = self.augment_transform(image)
+        
+        image = self.standardise(image)
+
 
         return image, label
-    
-    # Allow iterating over the dataset rather than just returning one element
-    # yield is the alternative to 'return' that returns a generator rather than single value
-    def __iter__(self):
-        for idx in range(len(self)):
-            yield self[idx]
+
 
 # Test code
 # if __name__ == "__main__":
