@@ -180,8 +180,6 @@ class Trainer:
                 patience=self.config.training.scheduler.step_size,
             )
 
-            # And the best val_ac so far
-            self.best_val_accuracy = 0.0
             start_epoch = 0
 
             if resume_from:

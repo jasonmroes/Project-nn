@@ -56,6 +56,7 @@ def load_model(checkpoint_path: str, config: DictConfig, device: torch.device) -
     """Load the FoodClassifier from a checkpoint file."""
     model = FoodClassifier(config=config)
     checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    checkpoint["model_state"] = fix_checkpoint_state_dict(checkpoint["model_state"]) # remove _orig_mod from state_dict, crash on cuda?
     model.load_state_dict(checkpoint["model_state"])
     model.to(device)
     model.eval()
@@ -116,6 +117,14 @@ def run_inference(
     print()  # newline after progress line
     return predictions
 
+def fix_checkpoint_state_dict(state_dict):
+    new_state_dict = {}
+    for k, v in state_dict.items():
+        if k.startswith("_orig_mod."):
+            new_state_dict[k[len("_orig_mod."):]] = v
+        else:
+            new_state_dict[k] = v
+    return new_state_dict
 
 def main():
     args = parse_args()
