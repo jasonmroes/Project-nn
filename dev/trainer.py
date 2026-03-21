@@ -10,6 +10,8 @@ from torch.utils.tensorboard import SummaryWriter
 from omegaconf import DictConfig
 from datetime import datetime
 
+# Improve performance on gpu by lowering precision (negligible for CNN)
+torch.set_float32_matmul_precision('high')
 
 # Trainer code generated with Claude
 class Trainer:
