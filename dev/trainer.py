@@ -186,6 +186,8 @@ class Trainer:
                 start_epoch = self.load_checkpoint(resume_from)
                 resume_from = None # Only resume from checkpoint for the first fold, after that we want to continue training without loading again
 
+            epochs_no_improve = 0  # reset at the start of each fold
+
             for epoch in range(start_epoch, self.num_epochs):
                 print(f"\n  Epoch {epoch + 1}/{self.num_epochs}")
  
@@ -202,6 +204,15 @@ class Trainer:
 
 
                 self.save_checkpoint(epoch, val_accuracy)
+
+                # Early stopping
+                if val_accuracy > self.best_val_accuracy:
+                    epochs_no_improve = 0
+                else:
+                    epochs_no_improve += 1
+                    if epochs_no_improve >= self.config.training.early_stopping_patience:
+                        print(f"Early stopping triggered after {epoch + 1} epochs.")
+                        break
 
         self.writer.close()
         print("Congratulations Congratulations Congratulations!")
