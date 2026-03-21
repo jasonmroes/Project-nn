@@ -202,9 +202,6 @@ class Trainer:
                 current_lr = self.optimizer.param_groups[0]['lr']
                 self.writer.add_scalar(f"LR/fold_{fold}", current_lr, epoch)
 
-
-                self.save_checkpoint(epoch, val_accuracy)
-
                 # Early stopping
                 if val_accuracy > self.best_val_accuracy:
                     epochs_no_improve = 0
@@ -213,6 +210,9 @@ class Trainer:
                     if epochs_no_improve >= self.config.training.early_stopping_patience:
                         print(f"Early stopping triggered after {epoch + 1} epochs.")
                         break
+                
+                self.save_checkpoint(epoch, val_accuracy)
+
 
         self.writer.close()
         print("Congratulations Congratulations Congratulations!")
