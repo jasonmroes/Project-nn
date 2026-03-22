@@ -187,6 +187,7 @@ class Trainer:
                 resume_from = None # Only resume from checkpoint for the first fold, after that we want to continue training without loading again
 
             epochs_no_improve = 0  # reset at the start of each fold
+            fold_best_val_accuracy = 0
 
             for epoch in range(start_epoch, self.num_epochs):
                 print(f"\n  Epoch {epoch + 1}/{self.num_epochs}")
@@ -203,7 +204,8 @@ class Trainer:
                 self.writer.add_scalar(f"LR/fold_{fold}", current_lr, epoch)
 
                 # Early stopping
-                if val_accuracy > self.best_val_accuracy:
+                if val_accuracy > fold_best_val_accuracy:
+                    fold_best_val_accuracy = val_accuracy
                     epochs_no_improve = 0
                 else:
                     epochs_no_improve += 1
